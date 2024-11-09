@@ -11,28 +11,40 @@ export type Database = {
     Tables: {
       perfumes: {
         Row: {
-          category: string | null;
-          description: string | null;
+          category: string[];
+          description: string;
           id: string;
-          image: string | null;
+          type: "Eau de Parfum" | "Eau de Toilette";
+          image: string;
           name: string;
-          price: number | null;
+          price: number;
+          date: string;
+          gender: "men" | "women" | "unisex";
+          scent_type: string[];
         };
         Insert: {
-          category?: string | null;
-          description?: string | null;
+          category?: string[];
+          description?: string;
+          type: "Eau de Parfum" | "Eau de Toilette";
           id?: string;
-          image?: string | null;
+          image?: string;
           name: string;
-          price?: number | null;
+          price?: number;
+          date: string;
+          gender: "men" | "women" | "unisex";
+          scent_type: string[];
         };
         Update: {
-          category?: string | null;
-          description?: string | null;
+          category?: string[];
+          description?: string;
+          type: "Eau de Parfum" | "Eau de Toilette";
           id?: string;
-          image?: string | null;
+          image?: string;
           name?: string;
-          price?: number | null;
+          price?: number;
+          date: string;
+          gender: "men" | "women" | "unisex";
+          scent_type: string[];
         };
         Relationships: [];
       };
