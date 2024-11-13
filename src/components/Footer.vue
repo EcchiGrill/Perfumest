@@ -14,12 +14,15 @@ const links = [
       <div class="flex flex-wrap justify-between">
         <div class="w-full md:w-1/3 mb-6 md:mb-0">
           <h3 class="text-xl font-semibold mb-2">Perfumest</h3>
-          <p class="text-gray-400">Your destination for fine fragrances</p>
+          <p class="text-gray-400">Your destination for delight of scents</p>
         </div>
         <div class="w-full md:w-1/3 mb-6 md:mb-0">
           <h3 class="text-xl font-semibold mb-2">Quick Links</h3>
           <ul class="text-gray-400">
-            <li v-for="link in links">
+            <li
+              v-for="link in links"
+              class="hover:text-primary transition duration-200"
+            >
               <RouterLink :to="link.to">{{ link.name }}</RouterLink>
             </li>
           </ul>

@@ -25,3 +25,7 @@ export const SCENT_TYPES = [
   "light",
   "musky",
 ];
+
+//Checkout
+export const SHIPPING = 10;
+export const TAX_RATE = 0.08;

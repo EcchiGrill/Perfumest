@@ -13,11 +13,14 @@ export const useFilters = defineStore("filters", () => {
   const selectedGenders = ref<string[]>([]);
   const selectedCategories = ref<string[]>([]);
   const selectedScents = ref<string[]>([]);
+  const priceRange = ref<number[]>([500]);
+
   return {
     filters,
     selectedTypes,
     selectedGenders,
     selectedCategories,
     selectedScents,
+    priceRange,
   };
 });

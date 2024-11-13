@@ -26,7 +26,7 @@ import Featured from "@/components/home/Featured.vue";
           <RouterLink to="/shop">
             <Button
               href="#"
-              class="text-base text-white hover:opacity-85 transition duration-500 w-32"
+              class="text-base text-white transition duration-500 w-32"
               >Shop Now</Button
             >
           </RouterLink>

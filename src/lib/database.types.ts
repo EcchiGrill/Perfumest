@@ -48,6 +48,54 @@ export type Database = {
         };
         Relationships: [];
       };
+      orders: {
+        Row: {
+          id: number;
+          email: string;
+          date: string;
+          order: {
+            description: string;
+            id: string;
+            type: "Eau de Parfum" | "Eau de Toilette";
+            image: string;
+            name: string;
+            price: number;
+            quantity: number;
+          }[];
+          summary: number;
+        };
+        Insert: {
+          id?: number;
+          email?: string;
+          date?: string;
+          order?: {
+            description: string;
+            id: string;
+            type: "Eau de Parfum" | "Eau de Toilette";
+            image: string;
+            name: string;
+            price: number;
+            quantity?: number;
+          }[];
+          summary?: number;
+        };
+        Update: {
+          id?: number;
+          email?: string;
+          date?: string;
+          order?: {
+            description: string;
+            id: string;
+            type: "Eau de Parfum" | "Eau de Toilette";
+            image: string;
+            name: string;
+            price: number;
+            quantity: number;
+          }[];
+          summary?: number;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;

@@ -30,7 +30,7 @@ export default ({ mode }: { mode: string }) => {
       },
     },
     server: {
-      port: 3000,
+      port: process.env.PORT as unknown as number,
     },
   });
 };

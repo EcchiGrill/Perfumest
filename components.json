@@ -1,8 +1,8 @@
 {
-  "$schema": "https://ui.shadcn.com/schema.json",
-  "style": "new-york",
-  "rsc": false,
-  "tsx": true,
+  "$schema": "https://shadcn-vue.com/schema.json",
+  "style": "default",
+  "typescript": true,
+  "tsConfigPath": "./tsconfig.json",
   "tailwind": {
     "config": "tailwind.config.js",
     "css": "src/assets/index.css",
@@ -10,12 +10,9 @@
     "cssVariables": true,
     "prefix": ""
   },
+  "framework": "vite",
   "aliases": {
     "components": "@/components",
-    "utils": "@/lib/utils",
-    "ui": "@/components/ui",
-    "lib": "@/lib",
-    "hooks": "@/hooks"
-  },
-  "iconLibrary": "lucide"
+    "utils": "@/lib/utils"
+  }
 }

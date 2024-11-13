@@ -12,7 +12,6 @@ import Filter from "@/components/shop/Filter.vue";
 const perfumesStore = usePerfumes();
 const filtersStore = useFilters();
 
-const priceRange = ref<number[]>([500]);
 const currentPage = ref(1);
 const itemsPerPage = ITEMS_PER_PAGE;
 
@@ -38,7 +37,7 @@ const filteredPerfumes = computed(() => {
         filtersStore.selectedScents.includes(scent)
       ).length;
 
-    const priceMatch = priceRange.value.filter(
+    const priceMatch = filtersStore.priceRange.filter(
       (range) => perfume.price <= range
     ).length;
 
@@ -51,7 +50,7 @@ const filteredPerfumes = computed(() => {
 const sortOption = ref("featured");
 
 const sortedProducts = computed(() => {
-  let result = [...filteredPerfumes.value];
+  let result = [...filteredPerfumes.value!];
 
   switch (sortOption.value) {
     case "price-asc":
@@ -77,7 +76,7 @@ const paginatedPerfumes = computed(() => {
 });
 
 const totalPages = computed(() => {
-  return Math.ceil(filteredPerfumes.value.length / itemsPerPage);
+  return Math.ceil(filteredPerfumes.value!.length / itemsPerPage);
 });
 
 const clearFilters = () => {
@@ -85,7 +84,7 @@ const clearFilters = () => {
   filtersStore.selectedScents = [];
   filtersStore.selectedGenders = [];
   filtersStore.selectedTypes = [];
-  priceRange.value = [500];
+  filtersStore.priceRange = [500];
   sortOption.value = "featured";
   currentPage.value = 1;
 };
@@ -131,10 +130,15 @@ const toggleShowFilters = () => {
 
                 <div class="mb-6">
                   <h3 class="font-semibold mb-2">Price Range</h3>
-                  <Slider v-model="priceRange" :min="0" :max="500" :step="10" />
+                  <Slider
+                    v-model="filtersStore.priceRange"
+                    :min="0"
+                    :max="500"
+                    :step="10"
+                  />
                   <div class="flex justify-between text-sm text-secondary mt-2">
                     <span>$0</span>
-                    <span>${{ priceRange[0] }}</span>
+                    <span>${{ filtersStore.priceRange[0] }}</span>
                   </div>
                 </div>
 
@@ -153,7 +157,7 @@ const toggleShowFilters = () => {
           <div class="mb-6 flex justify-end">
             <select
               v-model="sortOption"
-              class="bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gold"
+              class="bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
             >
               <option value="featured">Featured</option>
               <option value="price-asc">Price: Low to High</option>
@@ -179,7 +183,7 @@ const toggleShowFilters = () => {
               :class="[
                 'mx-1 px-3 py-1 rounded-md',
                 currentPage === page
-                  ? 'bg-gold text-white'
+                  ? 'bg-primary text-white'
                   : 'bg-white text-gray-700 hover:bg-gray-100',
               ]"
             >

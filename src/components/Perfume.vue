@@ -1,9 +1,16 @@
 <script setup lang="ts">
-import { FetchedPerfumeType } from "@/lib/types";
+import supabase from "@/lib/supabase-client";
+import { CartPerfumeType, FetchedPerfumeType } from "@/lib/types";
+import { getShortDesc } from "@/lib/utils";
+import { usePerfumes } from "@/stores/usePerfumes";
+import { useTogglers } from "@/stores/useTogglers";
 import { Heart, ShoppingCart } from "lucide-vue-next";
-import { computed, ref } from "vue";
+import { ref } from "vue";
 
-const props = defineProps<{ perfume: FetchedPerfumeType }>();
+defineProps<{ perfume: FetchedPerfumeType }>();
+
+const togglersStore = useTogglers();
+const perfumesStore = usePerfumes();
 
 const isDescriptionLess = ref(true);
 
@@ -11,21 +18,71 @@ const toggleDescription = () => {
   isDescriptionLess.value = !isDescriptionLess.value;
 };
 
-const getShortDesc = computed<string>(() => {
-  const { description } = props.perfume;
+const likePerfume = async (id: string) => {
+  if (!perfumesStore.likedPerfumes.includes(id)) {
+    //Like
+    perfumesStore.likedPerfumes.push(id);
+  } else {
+    //Dislike
+    perfumesStore.likedPerfumes = perfumesStore.likedPerfumes.filter(
+      (likedId) => likedId !== id
+    );
+  }
 
-  if (description.length < 100) return description;
+  try {
+    const { error } = await supabase.auth.updateUser({
+      data: {
+        likedPerfumes: perfumesStore.likedPerfumes,
+      },
+    });
 
-  const sliced = description.slice(0, 100);
-  const shortenArr = sliced.split(" ");
+    if (error) throw error;
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(error.message);
+    }
+  }
+};
 
-  if (shortenArr.length === 1) return sliced.padEnd(sliced.length + 3, ".");
+const cartPerfume = async (id: string) => {
+  const perfume: CartPerfumeType = perfumesStore.perfumes.find(
+    (perfume) => perfume.id === id
+  )!;
 
-  shortenArr.pop();
-  const shorten = shortenArr.join(" ");
+  if (!perfumesStore.cartIds.includes(id)) {
+    //Cart
+    perfumesStore.cartIds.push(id);
+    perfumesStore.cartPerfumes.push({
+      id: perfume.id,
+      name: perfume.name,
+      price: perfume.price,
+      quantity: 1,
+      type: perfume.type,
+      description: getShortDesc(perfume.description, 75),
+      image: perfume.image,
+    });
+  } else {
+    perfume.quantity!++;
+    togglersStore.isCartOpen = true;
+  }
 
-  return shorten.padEnd(shorten.length + 3, ".");
-});
+  togglersStore.isCartOpen = true;
+
+  try {
+    const { error } = await supabase.auth.updateUser({
+      data: {
+        cartIds: perfumesStore.cartIds,
+        cartPerfumes: perfumesStore.cartPerfumes,
+      },
+    });
+
+    if (error) throw error;
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(error.message);
+    }
+  }
+};
 </script>
 <template>
   <div
@@ -45,7 +102,11 @@ const getShortDesc = computed<string>(() => {
         {{ perfume.type }}
       </p>
       <p class="text-gray-600 mb-4 text-justify">
-        {{ isDescriptionLess ? getShortDesc : perfume.description }}
+        {{
+          isDescriptionLess
+            ? getShortDesc(perfume.description)
+            : perfume.description
+        }}
       </p>
       <p
         @click="toggleDescription"
@@ -61,13 +122,31 @@ const getShortDesc = computed<string>(() => {
         >
         <div class="flex justify-between items-center">
           <button
-            class="text-gray-600 px-4 py-2 rounded-full hover:text-red-600 transition duration-400"
+            class="text-gray-600 px-3 py-2 rounded-full hover:text-red-600 transition duration-300"
+            @click="likePerfume(perfume.id)"
           >
             <span class="sr-only">Like</span>
-            <Heart />
+            <Heart
+              :class="
+                perfumesStore.likedPerfumes.includes(perfume.id)
+                  ? 'text-red-600 transition duration-300'
+                  : ''
+              "
+              :fill="
+                perfumesStore.likedPerfumes.includes(perfume.id)
+                  ? '#ba3e2b'
+                  : 'transparent'
+              "
+            />
           </button>
           <button
-            class="text-gray-600 px-4 py-2 rounded-full hover:text-primary transition duration-400"
+            :class="
+              'pr-4 pl-3 py-2 rounded-full hover:text-primary transition duration-300 ' +
+              (perfumesStore.cartIds.includes(perfume.id)
+                ? 'text-primary'
+                : 'text-gray-600')
+            "
+            @click="cartPerfume(perfume.id)"
           >
             <span class="sr-only">Add to Cart</span>
             <ShoppingCart />

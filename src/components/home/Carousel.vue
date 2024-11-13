@@ -11,9 +11,6 @@ import { AUTOPLAY_INTERVAL, ITEMS_PER_CAROUSEL } from "@/lib/constants";
 
 const perfumesStore = usePerfumes();
 
-// let shuffledPerfumes = perfumesStore.perfumes;
-// shuffleArray(shuffledPerfumes);
-
 const currentIndex = ref(0);
 const isPlaying = ref(true);
 let autoplayInterval: ReturnType<typeof setInterval>;
@@ -71,7 +68,7 @@ onUnmounted(() => {
         :style="{ transform: `translateX(-${currentIndex * 100}%)` }"
       >
         <div
-          v-for="(perfume, index) in perfumesStore.perfumes"
+          v-for="(perfume, index) in perfumesStore.shuffledPerfumes"
           :key="perfume.id"
           v-show="index < checkItemsCount()"
           class="w-full flex-shrink-0"

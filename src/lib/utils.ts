@@ -1,4 +1,4 @@
-import { clsx, type ClassValue } from "clsx";
+import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -14,6 +14,20 @@ export const sortByDate = (a: string, b: string) => {
   const date2 = new Date(b).getTime();
 
   return date1 - date2;
+};
+
+export const getShortDesc = (description: string, length: number = 100) => {
+  if (description.length < length) return description;
+
+  const sliced = description.slice(0, length);
+  const shortenArr = sliced.split(" ");
+
+  if (shortenArr.length === 1) return sliced.padEnd(sliced.length + 3, ".");
+
+  shortenArr.pop();
+  const shorten = shortenArr.join(" ");
+
+  return shorten.padEnd(shorten.length + 3, ".");
 };
 
 export const shuffleArray = (array: any[]) => {

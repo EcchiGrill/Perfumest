@@ -22,6 +22,9 @@ module.exports = {
       screens: {
         xs: "500px",
       },
+      minHeight: {
+        fullsize: "calc(100vh - 23rem)",
+      },
       keyframes: {
         "accordion-down": {
           from: {
@@ -91,5 +94,5 @@ module.exports = {
       },
     },
   },
-  plugins: [animate, require("tailwindcss-animate")],
+  plugins: [animate],
 };

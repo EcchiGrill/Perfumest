@@ -1,15 +1,12 @@
 <script setup lang="ts">
+import { FilterNameType } from "@/lib/types";
 import { getWithUpperLetter } from "@/lib/utils";
 import { useFilters } from "@/stores/useFilters";
 
 const filtersStore = useFilters();
 defineProps<{
   filter: string[];
-  filterName:
-    | "selectedCategories"
-    | "selectedGenders"
-    | "selectedTypes"
-    | "selectedScents";
+  filterName: FilterNameType;
 }>();
 </script>
 <template>
