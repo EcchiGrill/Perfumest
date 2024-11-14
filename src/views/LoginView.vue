@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive } from "vue";
+import { ref, reactive, onMounted } from "vue";
 import {
   MailIcon,
   LockIcon,
@@ -15,6 +15,11 @@ import { openModal } from "jenesius-vue-modal";
 import RegisterView from "@/views/RegisterView.vue";
 import ModalBg from "@/modals/ModalBg.vue";
 import GoogleIcon from "@/assets/GoogleIcon.vue";
+import { useRouter } from "vue-router";
+import { useAuth } from "@/stores/useAuth";
+
+const authStore = useAuth();
+const router = useRouter();
 
 const email = ref("");
 const password = ref("");
@@ -22,7 +27,6 @@ const rememberMe = ref(false);
 const showPassword = ref(false);
 const isLoading = ref(false);
 const errors = reactive({
-  email: "",
   password: "",
 });
 
@@ -30,48 +34,25 @@ const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value;
 };
 
-// const validateEmail = (email: string) => {
-//   const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-//   return re.test(email);
-// };
-
 const handleSubmit = async () => {
+  if (password.value.length < 8) {
+    errors.password = "Password must be at least 8 characters long";
+    return;
+  }
+
+  errors.password = "";
+
   console.log(email);
   console.log(password);
 
-  errors.email = "";
-  errors.password = "";
-
-  //   // Validate email
-  //   if (!validateEmail(email.value)) {
-  //     errors.email = "Please enter a valid email address";
-  //     return;
-  //   }
-
-  //   // Validate password
-  //   if (password.value.length < 8) {
-  //     errors.password = "Password must be at least 8 characters long";
-  //     return;
-  //   }
-
-  //   // If validation passes, proceed with login
-  //   try {
-  //     isLoading.value = true;
-  //     // Simulating an API call
-  //     await new Promise((resolve) => setTimeout(resolve, 2000));
-  //     console.log("Login successful", {
-  //       email: email.value,
-  //       password: password.value,
-  //       rememberMe: rememberMe.value,
-  //     });
-  //     // Here you would typically redirect the user or update the app state
-  //   } catch (error) {
-  //     console.error("Login failed", error);
-  //     // Handle login error (e.g., show a notification)
-  //   } finally {
-  //     isLoading.value = false;
-  //   }
+  authStore.signUser({
+    email: email.value,
+    password: password.value,
+    rememberMe: rememberMe.value,
+  });
 };
+
+onMounted(() => authStore.isLogged && router.push("/profile"));
 </script>
 
 <template>
@@ -101,18 +82,10 @@ const handleSubmit = async () => {
               autocomplete="email"
               required
               v-model="email"
-              :class="[
-                'block w-full pl-10 sm:text-sm rounded-md ',
-                errors.email
-                  ? 'border-red-300 text-red-900 placeholder-red-300 focus:ring-red-500 focus:border-red-500'
-                  : 'border-gray-300 focus:ring-gold focus:border-gold',
-              ]"
+              class="block w-full pl-10 sm:text-sm rounded-md border-gray-300"
               placeholder="you@example.com"
             />
           </div>
-          <p v-if="errors.email" class="mt-2 text-sm text-red-600">
-            {{ errors.email }}
-          </p>
         </div>
 
         <div>
@@ -163,9 +136,12 @@ const handleSubmit = async () => {
               name="remember-me"
               type="checkbox"
               v-model="rememberMe"
-              class="h-4 w-4 text-gold focus:ring-gold border-gray-300 rounded accent-primary"
+              class="h-4 w-4 border-gray-300 rounded accent-primary"
             />
-            <label for="remember-me" class="ml-2 block text-sm text-gray-900">
+            <label
+              for="remember-me"
+              class="ml-2 block text-sm font-medium text-gray-900"
+            >
               Remember me
             </label>
           </div>

@@ -49,7 +49,7 @@ const missions = [
 <template>
   <main class="min-h-screen bg-gray-50">
     <section
-      class="relative bg-cover bg-left h-[50vh] bg-fixed bg-no-repeat"
+      class="relative bg-cover bg-left h-[50vh] xl:bg-fixed bg-no-repeat"
       style="background-image: url('/about.jpg')"
     >
       <div class="absolute inset-0 bg-black opacity-50"></div>

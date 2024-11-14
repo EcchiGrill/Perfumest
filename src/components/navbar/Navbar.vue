@@ -1,15 +1,20 @@
 <script setup lang="ts">
-import { LogIn, PhoneIcon, Store, UserIcon } from "lucide-vue-next";
+import { Book, LogIn, PhoneIcon, Store, UserIcon } from "lucide-vue-next";
 import LoginView from "@/views/LoginView.vue";
 import CheckoutCart from "./CheckoutCart.vue";
 import MobileMenu from "./MobileMenu.vue";
 import MobileButtons from "./MobileButtons.vue";
 import DesktopButtons from "./DesktopButtons.vue";
+import { useAuth } from "@/stores/useAuth";
+
+const authStore = useAuth();
 
 const navItems = [
-  { name: "About", to: "/about", icon: UserIcon },
+  { name: "About", to: "/about", icon: Book },
   { name: "Shop", to: "/shop", icon: Store },
-  { name: "Login", icon: LogIn, modal: LoginView },
+  authStore.isLogged
+    ? { name: "Profile", to: "/profile", icon: UserIcon }
+    : { name: "Login", icon: LogIn, modal: LoginView },
   { name: "Contact", to: "/contact", icon: PhoneIcon },
 ];
 </script>

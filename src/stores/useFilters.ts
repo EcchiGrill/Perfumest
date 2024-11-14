@@ -3,6 +3,8 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 
 export const useFilters = defineStore("filters", () => {
+  const search = ref<string>("");
+
   const filters = {
     selectedTypes: TYPES,
     selectedGenders: GENDERS,
@@ -22,5 +24,6 @@ export const useFilters = defineStore("filters", () => {
     selectedCategories,
     selectedScents,
     priceRange,
+    search,
   };
 });

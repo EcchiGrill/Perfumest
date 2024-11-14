@@ -25,7 +25,7 @@ const isActive = (path: string) => {
   >
     <div v-if="togglersStore.isMenuOpen && !togglersStore.isModal">
       <div
-        class="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 bg-white divide-y-2 divide-gray-50"
+        class="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 bg-white divide-y-2 divide-gray-100"
       >
         <div class="pt-5 pb-6 px-5">
           <nav class="grid gap-y-8">
@@ -52,7 +52,7 @@ const isActive = (path: string) => {
             </RouterLink>
           </nav>
         </div>
-        <div class="py-6 px-5 space-y-6">
+        <div class="py-6 px-5 space-y-6" @click="togglersStore.toggleMenu">
           <RouterLink to="/shop">
             <Button variant="default" class="text-white text-md w-full py-5">
               Shop Now

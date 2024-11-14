@@ -25,7 +25,7 @@ export type MissionType = {
 export type CartPerfumeType = {
   description: string;
   id: string;
-  type: "Eau de Parfum" | "Eau de Toilette";
+  type: string;
   image: string;
   name: string;
   price: number;
@@ -46,3 +46,31 @@ export type NavItemsType = {
   icon: LucideIcon;
   modal?: Component;
 }[];
+
+const getFetchedOrderType = (db: Database) => {
+  return db.public.Tables.orders.Row;
+};
+
+export type FetchedOrderType = ReturnType<typeof getFetchedOrderType>;
+export type FetchedOrdersType = FetchedOrderType[];
+
+export interface Payment {
+  id: string;
+  amount: number;
+  status: "processing" | "delivering" | "successful" | "failed";
+  email: string;
+}
+
+export interface ILogin {
+  email: string;
+  password: string;
+  rememberMe: boolean;
+}
+
+export interface IRegister {
+  fullName: string;
+  email: string;
+  password: string;
+  dateOfBirth: string;
+  gender: string;
+}

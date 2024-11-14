@@ -6,7 +6,12 @@ import tailwind from "tailwindcss";
 
 type processEnvType = { [key: string]: string };
 
-const cherryPickedKeys = ["SUPABASE_URL", "SUPABASE_ANON_KEY"];
+const cherryPickedKeys = [
+  "SUPABASE_URL",
+  "SUPABASE_ANON_KEY",
+  "ADMIN_EMAIL",
+  "ADMIN_PASSWORD",
+];
 
 // https://vitejs.dev/config/
 export default ({ mode }: { mode: string }) => {

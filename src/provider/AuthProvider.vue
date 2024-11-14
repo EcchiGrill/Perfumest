@@ -3,19 +3,27 @@ import supabase from "@/lib/supabase-client";
 import { onMounted } from "vue";
 import { useCookies } from "@vueuse/integrations/useCookies";
 import { useAuth } from "@/stores/useAuth";
+import { useOrders } from "@/stores/useOrders";
+import { usePerfumes } from "@/stores/usePerfumes";
 
 const { set, remove } = useCookies(["session"]);
 const authStore = useAuth();
+const ordersStore = useOrders();
+const perfumesStore = usePerfumes();
 
 const checkUserSession = async () => {
   supabase.auth
     .getSession()
     .then(({ data }) => {
       set("session", data.session?.access_token);
+
+      if (!data.session) signInAnon();
+
       authStore.userSession = data.session;
       authStore.userData = data.session?.user;
 
-      if (!data.session) signInAnon();
+      perfumesStore.fetchPerfumes();
+      ordersStore.fetchOrders();
 
       supabase.auth.onAuthStateChange((event, session) => {
         set("session", session?.access_token || "");

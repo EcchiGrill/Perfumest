@@ -14,9 +14,10 @@ export type Database = {
           category: string[];
           description: string;
           id: string;
-          type: "Eau de Parfum" | "Eau de Toilette";
+          type: string;
           image: string;
           name: string;
+          keyword: string;
           price: number;
           date: string;
           gender: "men" | "women" | "unisex";
@@ -25,73 +26,84 @@ export type Database = {
         Insert: {
           category?: string[];
           description?: string;
-          type: "Eau de Parfum" | "Eau de Toilette";
+          type?: string;
           id?: string;
           image?: string;
-          name: string;
+          name?: string;
+          keyword?: string;
           price?: number;
-          date: string;
-          gender: "men" | "women" | "unisex";
-          scent_type: string[];
+          date?: string;
+          gender?: "men" | "women" | "unisex";
+          scent_type?: string[];
         };
         Update: {
           category?: string[];
           description?: string;
-          type: "Eau de Parfum" | "Eau de Toilette";
+          type?: string;
           id?: string;
           image?: string;
           name?: string;
+          keyword?: string;
           price?: number;
-          date: string;
-          gender: "men" | "women" | "unisex";
-          scent_type: string[];
+          date?: string;
+          gender?: "men" | "women" | "unisex";
+          scent_type?: string[];
         };
         Relationships: [];
       };
       orders: {
         Row: {
           id: number;
+          uid: string;
+          status: "processing" | "delivering" | "successful" | "failed";
           email: string;
           date: string;
           order: {
             description: string;
             id: string;
-            type: "Eau de Parfum" | "Eau de Toilette";
+            type: string;
             image: string;
             name: string;
             price: number;
             quantity: number;
           }[];
+          message: string[];
           summary: number;
         };
         Insert: {
           id?: number;
+          uid: string;
+          status?: "processing" | "delivering" | "successful" | "failed";
           email?: string;
           date?: string;
           order?: {
             description: string;
             id: string;
-            type: "Eau de Parfum" | "Eau de Toilette";
+            type: string;
             image: string;
             name: string;
             price: number;
             quantity?: number;
           }[];
+          message?: string[];
           summary?: number;
         };
         Update: {
           id?: number;
+          uid: string;
+          status?: "processing" | "delivering" | "successful" | "failed";
           email?: string;
           date?: string;
           order?: {
             description: string;
             id: string;
-            type: "Eau de Parfum" | "Eau de Toilette";
+            type: string;
             image: string;
             name: string;
             price: number;
             quantity: number;
           }[];
+          message?: string[];
           summary?: number;
         };
         Relationships: [];

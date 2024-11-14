@@ -77,7 +77,7 @@ onUnmounted(() => {
             <img
               :src="perfume.image"
               :alt="perfume.name"
-              class="inset-0 w-full h-[30vh] md:h-[50vh] object-cover"
+              class="inset-0 w-full h-[60vh] md:h-[50vh] object-cover"
             />
             <div class="absolute inset-0 bg-black bg-opacity-40 flex items-end">
               <div class="p-4 sm:p-6 text-white">

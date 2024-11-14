@@ -9,11 +9,11 @@ import Featured from "@/components/home/Featured.vue";
 <template>
   <div class="relative min-h-screen bg-gray-50">
     <section
-      class="relative bg-cover bg-center h-[70vh] bg-fixed"
+      class="relative bg-cover bg-center h-[70vh] xl:bg-fixed"
       style="background-image: url('/header.jpg')"
     >
       <div class="absolute inset-0 bg-black opacity-50"></div>
-      <div class="absolute inset-0 flex items-center justify-center">
+      <div class="absolute inset-0 flex items-center justify-center mx-2">
         <div class="text-center">
           <h1
             class="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white mb-4"
@@ -50,12 +50,14 @@ import Featured from "@/components/home/Featured.vue";
           </p>
           <RouterLink
             to="/about"
-            class="flex place-content-center font-semibold hover:text-primary transition duration-300"
-            >Learn More <ExternalLink width="20" class="ml-1" />
+            class="flex place-content-center font-semibold"
+            ><Button class="text-gray-200 px-5 py-5 text-base"
+              >Learn More <ExternalLink width="20" class="ml-2"
+            /></Button>
           </RouterLink>
         </div>
 
-        <div class="py-10 px-5"><Carousel /></div>
+        <div class="py-10 md:px-5"><Carousel /></div>
       </div>
     </section>
   </div>

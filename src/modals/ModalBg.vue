@@ -12,7 +12,7 @@ onMounted(setScrollHidden);
 </script>
 <template>
   <div
-    class="fixed min-h-screen w-full bg-gray-700 bg-opacity-50 flex flex-col justify-center xs:px-6 lg:px-8"
+    class="fixed top-0 min-h-screen w-full bg-gray-700 bg-opacity-50 flex flex-col justify-center xs:px-6 lg:px-8"
     @click="
       togglersStore.isModal
         ? (togglersStore.toggleModal(), closeModal())

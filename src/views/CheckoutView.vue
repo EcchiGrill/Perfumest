@@ -90,9 +90,13 @@ const checkout = async () => {
     isLoading.value = true;
 
     const { error } = await supabase.from("orders").insert({
+      uid: authStore.userData?.id!,
       email: email.value,
       order: perfumesStore.cartPerfumes,
       summary: total.value,
+      message: perfumesStore.cartPerfumes.map(
+        (perfume) => `${perfume.name} x${perfume.quantity}`
+      ),
     });
 
     if (error) throw error;

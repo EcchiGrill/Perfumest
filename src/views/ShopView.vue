@@ -8,15 +8,33 @@ import { sortByDate } from "@/lib/utils";
 import { ITEMS_PER_PAGE } from "@/lib/constants";
 import { useFilters } from "@/stores/useFilters";
 import Filter from "@/components/shop/Filter.vue";
+import Search from "@/components/ui/Search.vue";
+import { FetchedPerfumeType } from "@/lib/types";
+import { useAuth } from "@/stores/useAuth";
+import NewPerfume from "@/components/NewPerfume.vue";
 
 const perfumesStore = usePerfumes();
+const authStore = useAuth();
 const filtersStore = useFilters();
 
 const currentPage = ref(1);
 const itemsPerPage = ITEMS_PER_PAGE;
 
+const checkSearch = (search: string, perfume: FetchedPerfumeType) => {
+  const formatted = search.toLowerCase().trim().split(" ");
+  const filtered = formatted.map((w) => perfume.keyword.includes(w));
+
+  return filtered.length <= 1
+    ? filtered[0]
+    : filtered[0] && filtered[filtered.length - 1];
+};
+
 const filteredPerfumes = computed(() => {
   return perfumesStore.perfumes.filter((perfume) => {
+    const searchMatch =
+      filtersStore.search.trim().length === 0 ||
+      checkSearch(filtersStore.search, perfume);
+
     const typeMatch =
       filtersStore.selectedTypes.length === 0 ||
       filtersStore.selectedTypes.includes(perfume.type);
@@ -42,7 +60,12 @@ const filteredPerfumes = computed(() => {
     ).length;
 
     return (
-      typeMatch && genderMatch && categoryMatch && scentMatch && priceMatch
+      searchMatch &&
+      typeMatch &&
+      genderMatch &&
+      categoryMatch &&
+      scentMatch &&
+      priceMatch
     );
   });
 });
@@ -103,14 +126,13 @@ const toggleShowFilters = () => {
 
       <div class="flex flex-col md:flex-row gap-8">
         <aside class="w-full md:w-1/4">
-          <div class="bg-white p-6 rounded-lg shadow-md">
-            <div class="flex justify-between text-xl font-semibold">
+          <div class="bg-white p-6 rounded-lg shadow-md cursor-pointer">
+            <div
+              class="flex justify-between text-xl font-semibold"
+              @click="toggleShowFilters"
+            >
               <h2>Filters</h2>
-              <component
-                :is="isShowFilters ? ChevronDown : ChevronUp"
-                class="cursor-pointer"
-                @click="toggleShowFilters"
-              />
+              <component :is="isShowFilters ? ChevronDown : ChevronUp" />
             </div>
 
             <transition
@@ -121,14 +143,10 @@ const toggleShowFilters = () => {
               leave-from-class="opacity-100 scale-100"
               leave-to-class="opacity-0 scale-95"
             >
-              <div v-show="isShowFilters" class="mt-4">
-                <Filter
-                  v-for="(_, index) in filtersStore.filters"
-                  :filter="filtersStore.filters[index]"
-                  :filter-name="index"
-                />
+              <div v-show="isShowFilters" class="mt-5">
+                <Search />
 
-                <div class="mb-6">
+                <div class="my-8">
                   <h3 class="font-semibold mb-2">Price Range</h3>
                   <Slider
                     v-model="filtersStore.priceRange"
@@ -141,6 +159,11 @@ const toggleShowFilters = () => {
                     <span>${{ filtersStore.priceRange[0] }}</span>
                   </div>
                 </div>
+                <Filter
+                  v-for="(_, index) in filtersStore.filters"
+                  :filter="filtersStore.filters[index]"
+                  :filter-name="index"
+                />
 
                 <button
                   @click="clearFilters"
@@ -157,7 +180,7 @@ const toggleShowFilters = () => {
           <div class="mb-6 flex justify-end">
             <select
               v-model="sortOption"
-              class="bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+              class="bg-white border border-gray-300 rounded-md px-3 py-3 focus:outline-none focus:ring-2 focus:ring-primary"
             >
               <option value="featured">Featured</option>
               <option value="price-asc">Price: Low to High</option>
@@ -167,6 +190,8 @@ const toggleShowFilters = () => {
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <NewPerfume v-if="authStore.isAdmin" />
+
             <Perfume
               v-for="perfume in paginatedPerfumes"
               :perfume="perfume"
