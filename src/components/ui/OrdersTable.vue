@@ -39,6 +39,7 @@ import { FetchedOrderType } from "@/lib/types";
 import { useOrders } from "@/stores/useOrders";
 import { valueUpdater } from "@/lib/utils";
 import { useAuth } from "@/stores/useAuth";
+import { onBeforeMount } from "vue";
 
 const ordersStore = useOrders();
 const authStore = useAuth();
@@ -52,18 +53,28 @@ const columns = [
     },
 
     cell: ({ row }) =>
-      h("div", { class: "capitalize" }, row.renderValue("status")),
+      h("div", { class: "capitalize" }, row.getValue("status")),
   }),
 
   columnHelper.accessor("email", {
     header: () => {
-      return h(h("div", { class: "capitalize" }, "Email"));
+      return h(
+        h(
+          "div",
+          { class: `${!authStore.isAdmin && "hidden"} capitalize` },
+          "Email"
+        )
+      );
     },
-    cell: ({ row }) => h("div", row.getValue("email")),
+    cell: ({ row }) =>
+      h(
+        "div",
+        { class: `${!authStore.isAdmin && "hidden"}` },
+        row.getValue("email")
+      ),
   }),
 
   columnHelper.accessor("date", {
-    enablePinning: true,
     header: ({ column }) => {
       return h(
         Button,
@@ -79,7 +90,7 @@ const columns = [
       h(
         "div",
         { class: "capitalize" },
-        new Date(Date.parse(row.renderValue("date"))).toLocaleDateString(
+        new Date(Date.parse(row.getValue("date"))).toLocaleDateString(
           ["en-US"],
           {
             formatMatcher: "basic",
@@ -108,7 +119,7 @@ const columns = [
     },
 
     cell: ({ row }) => {
-      const amount = Number.parseFloat(row.renderValue("summary"));
+      const amount = Number.parseFloat(row.getValue("summary"));
 
       const formatted = new Intl.NumberFormat("en-US", {
         style: "currency",
@@ -155,16 +166,25 @@ const table = useVueTable({
     },
   },
 });
+
+onBeforeMount(() => {
+  setTimeout(() =>
+    authStore.isAdmin
+      ? ordersStore.fetchAdminOrders()
+      : ordersStore.fetchOrders()
+  );
+});
 </script>
 
 <template>
   <div class="w-full">
     <div class="flex gap-2 items-center py-4">
       <Input
+        v-if="authStore.isAdmin"
         class="max-w-sm"
-        placeholder="Filter orders..."
-        :model-value="table.getColumn('order')?.getFilterValue() as string"
-        @update:model-value="table.getColumn('order')?.setFilterValue($event)"
+        placeholder="Filter email..."
+        :model-value="table.getColumn('email')?.getFilterValue() as string"
+        @update:model-value="table.getColumn('email')?.setFilterValue($event)"
       />
       <DropdownMenu>
         <DropdownMenuTrigger as-child>

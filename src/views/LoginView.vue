@@ -17,31 +17,23 @@ import ModalBg from "@/modals/ModalBg.vue";
 import GoogleIcon from "@/assets/GoogleIcon.vue";
 import { useAuth } from "@/stores/useAuth";
 import { useRouter } from "vue-router";
+import { useLogin } from "@/stores/useLogin";
+import { storeToRefs } from "pinia";
 
 const authStore = useAuth();
+const loginStore = useLogin();
 const router = useRouter();
 
-const email = ref("");
-const password = ref("");
+const { email, isLoading, password } = storeToRefs(loginStore);
+
 const showPassword = ref(false);
-const isLoading = ref(false);
 
 const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value;
 };
 
-const handleSubmit = async () => {
-  console.log(email);
-  console.log(password);
-
-  authStore.signUser({
-    email: email.value,
-    password: password.value,
-  });
-};
-
 onBeforeMount(() => {
-  authStore.isLogged && router.push("/profile");
+  setTimeout(() => authStore.isLogged && router.push("/profile"));
 });
 </script>
 
@@ -54,7 +46,7 @@ onBeforeMount(() => {
         </h2>
       </div>
 
-      <form class="space-y-6" @submit.prevent="handleSubmit">
+      <form class="space-y-6" @submit.prevent="loginStore.handleSubmit">
         <div>
           <label for="email" class="block text-sm font-medium text-gray-700">
             Email address
@@ -109,29 +101,20 @@ onBeforeMount(() => {
               </button>
             </div>
           </div>
-
-          <div class="text-sm mt-3 text-left">
-            <a
-              href="#"
-              class="font-medium hover:text-primary transition duration-300"
-            >
-              Forgot your password?
-            </a>
-          </div>
         </div>
 
         <div>
-          <Button
+          <button
             type="submit"
             :disabled="isLoading"
-            class="w-full flex justify-center py-2 px-4 border border-transparent text-white rounded-md shadow-sm text-sm font-medium focus:outline-none focus:ring-secondary"
+            class="w-full text-sm bg-primary hover:bg-opacity-90 text-white py-2 px-4 rounded-md transition duration-300 flex items-center justify-center"
           >
             <LoaderIcon
               v-if="isLoading"
               class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
             />
             {{ isLoading ? "Signing in..." : "Sign in" }}
-          </Button>
+          </button>
         </div>
       </form>
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from "vue";
+import { computed, onBeforeMount, reactive, ref } from "vue";
 import {
   EyeIcon,
   EyeOffIcon,
@@ -99,8 +99,8 @@ const saveSettings = async () => {
   }
 };
 
-onMounted(() => {
-  !authStore.isLogged && router.push("/login");
+onBeforeMount(() => {
+  setTimeout(() => !authStore.isLogged && router.push("/login"));
 });
 </script>
 
@@ -175,7 +175,7 @@ onMounted(() => {
                     >New Password</label
                   >
                   <div
-                    class="flex place-content-center place-items-center gap-3 w-1/3"
+                    class="flex place-content-center place-items-center gap-3 w-1/3 min-w-72"
                   >
                     <Input
                       :type="showPassword ? 'text' : 'password'"
@@ -191,6 +191,7 @@ onMounted(() => {
                     />
                     <div class="mt-0.5 flex items-center">
                       <Button
+                        type="button"
                         variant="outline"
                         @click="togglePasswordVisibility"
                         class="text-gray-400 hover:text-gray-500 focus:outline-none focus:text-gray-500"
@@ -217,7 +218,7 @@ onMounted(() => {
                       id="password2"
                       v-model="password2"
                       :class="[
-                        'mt-1 w-1/3',
+                        'mt-1 w-1/3 min-w-72',
                         errors.password2
                           ? 'border-red-300 text-red-900 placeholder-red-300 focus:ring-red-500 focus:border-red-500'
                           : 'border-gray-300',
@@ -241,7 +242,11 @@ onMounted(() => {
                     Save Changes
                   </button>
                   <div @click="authStore.signOut">
-                    <Button variant="destructive" class="text-white mt-1 px-4">
+                    <Button
+                      variant="destructive"
+                      type="button"
+                      class="text-white mt-1 px-4"
+                    >
                       Sign Out
                     </Button>
                   </div>

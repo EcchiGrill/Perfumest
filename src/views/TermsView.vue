@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   MailIcon,
   PhoneIcon,
@@ -161,7 +160,7 @@ import {
           </div>
 
           <div
-            class="mt-8 -mb-2 pt-6 border-t border-gray-200 flex justify-between"
+            class="mt-8 -mb-2 pt-6 border-t border-gray-200 flex justify-between gap-5"
           >
             <div class="space-y-1">
               <p class="text-gray-600 flex items-center">

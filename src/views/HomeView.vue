@@ -24,9 +24,7 @@ import Featured from "@/components/home/Featured.vue";
             Exquisite fragrances for every occasion
           </p>
           <RouterLink to="/shop">
-            <Button
-              href="#"
-              class="text-base text-white transition duration-500 w-32"
+            <Button class="text-base text-white transition duration-500 w-32"
               >Shop Now</Button
             >
           </RouterLink>

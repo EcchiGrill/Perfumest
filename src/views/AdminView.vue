@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from "vue";
 import {
+  EyeIcon,
+  EyeOffIcon,
   History,
   MoveRight,
   Settings,
@@ -133,7 +135,7 @@ onMounted(() => !authStore.isLogged && router.push("/login"));
         </div>
 
         <!-- Tab Content -->
-        <div class="p-6">
+        <div class="p-6 relative">
           <!-- Main Panel -->
           <div v-if="currentTab === 'orders'" class="space-y-6">
             <OrdersTable />
@@ -153,7 +155,7 @@ onMounted(() => !authStore.isLogged && router.push("/login"));
                     >New Password</label
                   >
                   <div
-                    class="flex place-content-center place-items-center gap-3 w-1/3"
+                    class="flex place-content-center place-items-center gap-3 w-1/3 min-w-72"
                   >
                     <Input
                       :type="showPassword ? 'text' : 'password'"
@@ -169,6 +171,7 @@ onMounted(() => !authStore.isLogged && router.push("/login"));
                     />
                     <div class="mt-0.5 flex items-center">
                       <Button
+                        type="button"
                         variant="outline"
                         @click="togglePasswordVisibility"
                         class="text-gray-400 hover:text-gray-500 focus:outline-none focus:text-gray-500"
@@ -195,7 +198,7 @@ onMounted(() => !authStore.isLogged && router.push("/login"));
                       id="password2"
                       v-model="password2"
                       :class="[
-                        'mt-1 w-1/3',
+                        'mt-1 w-1/3 min-w-72',
                         errors.password2
                           ? 'border-red-300 text-red-900 placeholder-red-300 focus:ring-red-500 focus:border-red-500'
                           : 'border-gray-300',
@@ -218,8 +221,12 @@ onMounted(() => !authStore.isLogged && router.push("/login"));
                   >
                     Save Changes
                   </button>
-                  <div @click="authStore.signOut">
-                    <Button variant="destructive" class="text-white mt-1 px-4">
+                  <div @click="authStore.signOut" class="relative">
+                    <Button
+                      variant="destructive"
+                      type="button"
+                      class="text-white mt-1 px-4 z-20 absolute right-0"
+                    >
                       Sign Out
                     </Button>
                   </div>
@@ -227,6 +234,10 @@ onMounted(() => !authStore.isLogged && router.push("/login"));
               </form>
             </div>
           </div>
+          <div
+            v-if="currentTab === 'settings'"
+            class="bg-gray-700 opacity-40 w-full h-screen absolute top-0 left-0"
+          />
 
           <!-- Favourite Perfumes Panel -->
           <div v-if="currentTab === 'favourites'" class="space-y-6">

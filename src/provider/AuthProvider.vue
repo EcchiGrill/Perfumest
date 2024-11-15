@@ -31,8 +31,11 @@ const checkUserSession = async () => {
 
       perfumesStore.fetchPerfumes();
 
-      if (data.session && authStore.isLogged) ordersStore.fetchOrders();
-      if (authStore.isAdmin) ordersStore.fetchAdminOrders();
+      if (authStore.isAdmin) {
+        ordersStore.fetchAdminOrders();
+      } else if (data.session && authStore.isLogged && !authStore.isAdmin) {
+        ordersStore.fetchOrders();
+      }
 
       supabase.auth.onAuthStateChange((event, session) => {
         set("session", session?.access_token || "");

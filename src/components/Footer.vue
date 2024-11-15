@@ -9,6 +9,7 @@ const links = [
   { name: "About", to: "/about" },
   { name: "Shop", to: "/shop" },
   { name: "Contact", to: "/contact" },
+  { name: "Terms and Conditions", to: "/terms" },
 ];
 
 const toast = useToast();
@@ -17,8 +18,8 @@ const email = ref<string>();
 
 const resend = new Resend(RESEND_KEY);
 
-const subscribeNewsletter = () => {
-  resend.contacts.create({
+const subscribeNewsletter = async () => {
+  await resend.contacts.create({
     email: email.value!,
     unsubscribed: false,
     audienceId: "22fd1fd7-08ec-4daf-96c1-1887378ac1aa",

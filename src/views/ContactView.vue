@@ -9,7 +9,6 @@ import {
   Instagram,
   Linkedin,
 } from "lucide-vue-next";
-import Button from "@/components/ui/button/Button.vue";
 import Textarea from "@/components/ui/textarea/Textarea.vue";
 import Input from "@/components/ui/input/Input.vue";
 import { Resend } from "resend";
@@ -46,14 +45,17 @@ const handleSubmit = async () => {
       email: "",
       message: "",
     };
-
-    toast.success("Thank you for your message. We will get back to you soon!");
   } catch (error) {
     if (error instanceof Error) {
       return toast.error(error.message);
     }
   } finally {
-    setTimeout(() => (isLoading.value = false), 2000);
+    setTimeout(() => {
+      isLoading.value = false;
+      toast.success(
+        "Thank you for your message. We will get back to you soon!"
+      );
+    }, 2000);
   }
 };
 </script>
@@ -117,17 +119,17 @@ const handleSubmit = async () => {
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
               ></Textarea>
             </div>
-            <Button
+            <button
               type="submit"
               :disabled="isLoading"
-              class="w-full bg-primary hover:bg-primary-dark text-white font-bold py-2 px-4 rounded-md transition duration-300 flex items-center justify-center mt-5"
+              class="w-full bg-primary hover:bg-opacity-90 text-white font-bold py-2 px-4 rounded-md transition duration-300 flex items-center justify-center mt-5"
             >
               <LoaderIcon
                 v-if="isLoading"
                 class="animate-spin -ml-1 mr-3 h-5 w-5"
               />
               {{ isLoading ? "Sending..." : "Send Message" }}
-            </Button>
+            </button>
           </form>
         </div>
 

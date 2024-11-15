@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, onBeforeMount } from "vue";
+import { ref, onBeforeMount } from "vue";
 import {
   MailIcon,
   LockIcon,
@@ -10,7 +10,6 @@ import {
   Facebook,
   Twitter,
 } from "lucide-vue-next";
-import Button from "@/components/ui/button/Button.vue";
 import Input from "@/components/ui/input/Input.vue";
 import DatePicker from "@/components/ui/DatePicker.vue";
 import { useDatePicker } from "@/stores/useDatePicker";
@@ -24,62 +23,42 @@ import GoogleIcon from "@/assets/GoogleIcon.vue";
 import { useAuth } from "@/stores/useAuth";
 import { useRouter } from "vue-router";
 import { closeModal } from "jenesius-vue-modal";
+import { useTogglers } from "@/stores/useTogglers";
+import { useRegister } from "@/stores/useRegister";
+import { storeToRefs } from "pinia";
 
 const authStore = useAuth();
 const router = useRouter();
-
-const fullName = ref("");
-const email = ref("");
-const password = ref("");
+const togglersStore = useTogglers();
 const dateStore = useDatePicker();
-const gender = ref("");
+const registerStore = useRegister();
+
+const { email, fullName, gender, isLoading, password, passwordError } =
+  storeToRefs(registerStore);
+
 const showPassword = ref(false);
-const isLoading = ref(false);
-const errors = reactive({
-  password: "",
-});
 
 const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value;
 };
 
-const handleSubmit = async () => {
-  if (password.value.length < 8) {
-    errors.password = "Password must be at least 8 characters long";
-    return;
-  }
-
-  errors.password = "";
-
-  console.log(fullName.value);
-  console.log(email.value);
-  console.log(password.value);
-  console.log(dateStore.value?.toString());
-  console.log(gender.value);
-
-  authStore.registerUser({
-    fullName: fullName.value,
-    email: email.value,
-    password: password.value,
-    dateOfBirth: dateStore.value?.toString()!,
-    gender: gender.value,
-  });
-};
-
 onBeforeMount(() => {
-  authStore.isLogged && router.push("/profile");
+  setTimeout(() => authStore.isLogged && router.push("/profile"));
 });
 </script>
 
 <template>
-  <div class="z-30 sm:mx-auto sw-full max-w-md mx-4 cursor-auto">
+  <div class="z-30 sm:mx-auto w-full max-w-md mx-4 cursor-auto">
     <div class="bg-white shadow rounded-lg py-6 md:py-8 px-8 xs:px-14">
       <div class=":mx-auto">
         <h2 class="text-center text-3xl font-bold text-secondary mb-6">
           Create your Perfumest account
         </h2>
       </div>
-      <form class="space-y-3 md:space-y-6" @submit.prevent="handleSubmit">
+      <form
+        class="space-y-3 md:space-y-6"
+        @submit.prevent="registerStore.handleSubmit"
+      >
         <div>
           <label for="fullName" class="block text-sm font-medium text-gray-700">
             Full Name
@@ -143,7 +122,7 @@ onBeforeMount(() => {
               v-model="password"
               :class="[
                 'block w-full pl-10 pr-10 sm:text-sm rounded-md',
-                errors.password
+                passwordError
                   ? 'border-red-300 text-red-900 placeholder-red-300 focus:ring-red-500 focus:border-red-500'
                   : 'border-gray-300',
               ]"
@@ -160,8 +139,8 @@ onBeforeMount(() => {
               </button>
             </div>
           </div>
-          <p v-if="errors.password" class="mt-2 text-sm text-red-600">
-            {{ errors.password }}
+          <p v-if="passwordError" class="mt-2 text-sm text-red-600">
+            {{ passwordError }}
           </p>
         </div>
 
@@ -215,11 +194,12 @@ onBeforeMount(() => {
             <a
               @click="
                 () => {
+                  togglersStore.isModal = false;
                   closeModal();
                   $router.push('/terms');
                 }
               "
-              class="group block -mb-0.5 text-primary"
+              class="group block -mb-0.5 text-primary cursor-pointer"
               >Terms and Conditions<span
                 class="block w-0 group-hover:w-full transition-all duration-300 h-0.5 bg-primary"
               ></span
@@ -228,17 +208,17 @@ onBeforeMount(() => {
         </div>
 
         <div>
-          <Button
+          <button
             type="submit"
             :disabled="isLoading"
-            class="w-full flex justify-center py-2 px-4 border border-transparent text-white rounded-md shadow-sm text-sm font-medium focus:outline-none focus:ring-secondary"
+            class="w-full text-sm bg-primary hover:bg-opacity-90 text-white py-2 px-4 rounded-md transition duration-300 flex items-center justify-center"
           >
             <LoaderIcon
               v-if="isLoading"
               class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
             />
-            {{ isLoading ? "Creating account..." : "Create account" }}
-          </Button>
+            {{ isLoading ? "Signing up..." : "Create account" }}
+          </button>
         </div>
       </form>
 
