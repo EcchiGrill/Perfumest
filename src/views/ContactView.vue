@@ -12,6 +12,11 @@ import {
 import Button from "@/components/ui/button/Button.vue";
 import Textarea from "@/components/ui/textarea/Textarea.vue";
 import Input from "@/components/ui/input/Input.vue";
+import { Resend } from "resend";
+import { RESEND_KEY } from "@/lib/constants";
+import { useToast } from "vue-toastification";
+
+const toast = useToast();
 
 const form = ref({
   name: "",
@@ -21,12 +26,20 @@ const form = ref({
 
 const isLoading = ref(false);
 
+const resend = new Resend(RESEND_KEY);
+
 const handleSubmit = async () => {
   isLoading.value = true;
 
   try {
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    console.log("Form submitted:", form.value);
+    const { error } = await resend.emails.send({
+      from: `${form.value.name} <${form.value.email}>`,
+      to: ["dmitry.oborsky@gmail.com"],
+      subject: form.value.name,
+      html: `<p>${form.value.message}</p>`,
+    });
+
+    if (error) throw error;
 
     form.value = {
       name: "",
@@ -34,12 +47,13 @@ const handleSubmit = async () => {
       message: "",
     };
 
-    alert("Thank you for your message. We will get back to you soon!");
+    toast.success("Thank you for your message. We will get back to you soon!");
   } catch (error) {
-    console.error("Error submitting form:", error);
-    alert("There was an error submitting your message. Please try again.");
+    if (error instanceof Error) {
+      return toast.error(error.message);
+    }
   } finally {
-    isLoading.value = false;
+    setTimeout(() => (isLoading.value = false), 2000);
   }
 };
 </script>
@@ -125,28 +139,36 @@ const handleSubmit = async () => {
             </h2>
             <div class="space-y-4">
               <div class="flex items-start">
-                <MapPinIcon class="h-6 w-6 text-primary mr-2 mt-1" />
+                <MapPinIcon class="h-5 w-5 text-primary mr-2 mt-1" />
                 <div>
                   <h3 class="font-semibold">Address</h3>
                   <p>Sportyvna Square, Kyiv, 01033</p>
                 </div>
               </div>
               <div class="flex items-start">
-                <PhoneIcon class="h-6 w-6 text-primary mr-2 mt-1" />
+                <PhoneIcon class="h-5 w-5 text-primary mr-2 mt-1" />
                 <div>
                   <h3 class="font-semibold">Phone</h3>
-                  <p>+1 (555) 123-4567</p>
+                  <a
+                    href="tel:+15551234567"
+                    class="hover:text-primary transition duration-300"
+                    >1 (555) 123-4567</a
+                  >
                 </div>
               </div>
               <div class="flex items-start">
-                <MailIcon class="h-6 w-6 text-primary mr-2 mt-1" />
+                <MailIcon class="h-5 w-5 text-primary mr-2 mt-1" />
                 <div>
                   <h3 class="font-semibold">Email</h3>
-                  <p>info@perfumest.com</p>
+                  <a
+                    href="mailto:info@perfumest.one"
+                    class="hover:text-primary transition duration-300"
+                    >info@perfumest.one</a
+                  >
                 </div>
               </div>
               <div class="flex items-start">
-                <ClockIcon class="h-6 w-6 text-primary mr-2 mt-1" />
+                <ClockIcon class="h-5 w-5 text-primary mr-2 mt-1" />
                 <div>
                   <h3 class="font-semibold">Business Hours</h3>
                   <p>Monday - Friday: 9am - 6pm</p>

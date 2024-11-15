@@ -5,6 +5,7 @@ import Textarea from "@/components/ui/textarea/Textarea.vue";
 import Input from "@/components/ui/input/Input.vue";
 import { usePerfumes } from "@/stores/usePerfumes";
 import Button from "./ui/button/Button.vue";
+import { useToast } from "vue-toastification";
 
 const perfumesStore = usePerfumes();
 
@@ -14,21 +15,29 @@ const image = ref<string>();
 const type = ref<string>();
 const description = ref<string>();
 
+const toast = useToast();
+
 const handleSubmit = async () => {
   try {
-    const { data, error } = await supabase.from("perfumes").insert({
-      price: price.value,
-      name: name.value,
-      image: image.value,
-      description: description.value,
-      type: type.value,
-    });
+    const { data, error } = await supabase
+      .from("perfumes")
+      .insert({
+        price: price.value,
+        name: name.value,
+        image: image.value,
+        description: description.value,
+        type: type.value,
+      })
+      .select();
 
-    if (error) throw new Error("Insert error!");
+    if (error) throw error;
 
-    perfumesStore.perfumes = data!;
+    perfumesStore.perfumes = data;
+    perfumesStore.fetchPerfumes();
   } catch (error) {
-    return;
+    if (error instanceof Error) {
+      return toast.error(error.message);
+    }
   }
 };
 </script>

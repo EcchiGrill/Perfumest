@@ -4,29 +4,49 @@ import { ref } from "vue";
 import { useAuth } from "./useAuth";
 import { FetchedOrdersType } from "@/lib/types";
 
-export const useOrders = defineStore("orders", () => {
-  const authStore = useAuth();
-  const orders = ref<FetchedOrdersType>([]);
+export const useOrders = defineStore(
+  "orders",
+  () => {
+    const authStore = useAuth();
+    const orders = ref<FetchedOrdersType>([]);
 
-  console.log(orders.value);
+    const fetchOrders = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("orders")
+          .select()
+          .eq("uid", authStore.userData?.id!);
 
-  const fetchOrders = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("orders")
-        .select()
-        .eq("uid", authStore.userData?.id!);
+        if (error) throw error;
 
-      if (error) throw new Error("Fetching Error");
+        orders.value = data;
+      } catch (error) {
+        return;
+      }
+    };
 
-      orders.value = data;
-    } catch (error) {
-      return;
-    }
-  };
+    const fetchAdminOrders = async () => {
+      try {
+        const { data, error } = await supabase.from("orders").select();
 
-  return {
-    orders,
-    fetchOrders,
-  };
-});
+        if (error) throw error;
+
+        orders.value = data;
+      } catch (error) {
+        return;
+      }
+    };
+
+    return {
+      orders,
+      fetchOrders,
+      fetchAdminOrders,
+    };
+  },
+  {
+    persist: {
+      storage: sessionStorage,
+      pick: ["orders"],
+    },
+  }
+);

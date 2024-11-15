@@ -56,15 +56,16 @@ export type FetchedOrdersType = FetchedOrderType[];
 
 export interface Payment {
   id: string;
+  date: string;
+  message: string[];
+  order: object[];
   amount: number;
   status: "processing" | "delivering" | "successful" | "failed";
-  email: string;
 }
 
 export interface ILogin {
   email: string;
   password: string;
-  rememberMe: boolean;
 }
 
 export interface IRegister {

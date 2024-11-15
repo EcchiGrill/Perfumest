@@ -5,17 +5,19 @@ import { getShortDesc } from "@/lib/utils";
 import { useAuth } from "@/stores/useAuth";
 import { usePerfumes } from "@/stores/usePerfumes";
 import { useTogglers } from "@/stores/useTogglers";
-import { Heart, Pencil, PencilOff, ShoppingCart } from "lucide-vue-next";
+import { Heart, Pencil, PencilOff, ShoppingCart, Trash } from "lucide-vue-next";
 import { ref } from "vue";
 import Button from "./ui/button/Button.vue";
 import Textarea from "./ui/textarea/Textarea.vue";
 import Input from "./ui/input/Input.vue";
+import { useToast } from "vue-toastification";
 
 defineProps<{ perfume: FetchedPerfumeType }>();
 
 const togglersStore = useTogglers();
 const perfumesStore = usePerfumes();
 const authStore = useAuth();
+const toast = useToast();
 
 const isEditing = ref<boolean>(false);
 
@@ -106,7 +108,9 @@ const cartPerfume = async (id: string) => {
   }
 };
 
-const handleSubmit = async (perfume: FetchedPerfumeType) => {
+const handleEdit = async (perfume: FetchedPerfumeType) => {
+  toggleEdit();
+
   try {
     const { data, error } = await supabase
       .from("perfumes")
@@ -116,13 +120,36 @@ const handleSubmit = async (perfume: FetchedPerfumeType) => {
         type: (type.value ??= perfume.type),
         description: (description.value ??= perfume.description),
       })
-      .eq("id", perfume.id);
+      .eq("id", perfume.id)
+      .select();
 
-    if (error) throw new Error("Insert error!");
+    if (error) throw error;
 
-    perfumesStore.perfumes = data!;
+    perfumesStore.perfumes = data;
+    perfumesStore.fetchPerfumes();
   } catch (error) {
-    return;
+    if (error instanceof Error) {
+      return toast.error(error.message);
+    }
+  }
+};
+
+const deleteItem = async (id: string) => {
+  try {
+    const { data, error } = await supabase
+      .from("perfumes")
+      .delete()
+      .eq("id", id)
+      .select();
+
+    if (error) throw error;
+
+    perfumesStore.perfumes = data;
+    perfumesStore.fetchPerfumes();
+  } catch (error) {
+    if (error instanceof Error) {
+      return toast.error(error.message);
+    }
   }
 };
 </script>
@@ -137,7 +164,7 @@ const handleSubmit = async (perfume: FetchedPerfumeType) => {
       class="w-full h-64 object-cover"
     />
     <div class="p-4">
-      <form v-if="isEditing" @submit.prevent="handleSubmit(perfume)">
+      <form v-if="isEditing" @submit.prevent="handleEdit(perfume)">
         <Input
           :default-value="perfume.name"
           class="text-xl font-semibold text-gray-800 mb-2 focus-visible:ring-primary"
@@ -164,11 +191,9 @@ const handleSubmit = async (perfume: FetchedPerfumeType) => {
             step="0.01"
             v-model:model-value="price"
           />
-          <div @click="toggleEdit">
-            <Button variant="default" type="submit" class="text-white"
-              >Save Changes</Button
-            >
-          </div>
+          <Button variant="default" type="submit" class="text-white"
+            >Save Changes</Button
+          >
         </div>
       </form>
 
@@ -235,13 +260,31 @@ const handleSubmit = async (perfume: FetchedPerfumeType) => {
           </button>
         </div>
       </div>
-      <div v-if="authStore.isAdmin" @click="toggleEdit">
-        <Button variant="outline" class="absolute top-2 right-2 w-10 h-10 p-0">
-          <component
-            class="h-4 w-4"
-            :is="isEditing ? PencilOff : Pencil"
-          /><span class="sr-only">Edit Card</span>
-        </Button>
+
+      <div
+        v-if="authStore.isAdmin"
+        class="absolute top-3 flex justify-between w-[calc(100%-2rem)]"
+      >
+        <div @click="deleteItem(perfume.id)">
+          <Button
+            variant="outline"
+            class="w-10 h-10 p-0 hover:text-primary transition duration-300"
+          >
+            <Trash class="h-4 w-4" /><span class="sr-only">Edit Card</span>
+          </Button>
+        </div>
+
+        <div @click="toggleEdit">
+          <Button
+            variant="outline"
+            class="w-10 h-10 p-0 hover:text-primary transition duration-300"
+          >
+            <component
+              class="h-4 w-4"
+              :is="isEditing ? PencilOff : Pencil"
+            /><span class="sr-only">Edit Card</span>
+          </Button>
+        </div>
       </div>
     </div>
   </div>

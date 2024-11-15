@@ -6,17 +6,19 @@ import MobileMenu from "./MobileMenu.vue";
 import MobileButtons from "./MobileButtons.vue";
 import DesktopButtons from "./DesktopButtons.vue";
 import { useAuth } from "@/stores/useAuth";
+import { ref } from "vue";
+import { NavItemsType } from "@/lib/types";
 
 const authStore = useAuth();
 
-const navItems = [
+const navItems = ref<NavItemsType>([
   { name: "About", to: "/about", icon: Book },
   { name: "Shop", to: "/shop", icon: Store },
   authStore.isLogged
     ? { name: "Profile", to: "/profile", icon: UserIcon }
     : { name: "Login", icon: LogIn, modal: LoginView },
   { name: "Contact", to: "/contact", icon: PhoneIcon },
-];
+]);
 </script>
 
 <template>

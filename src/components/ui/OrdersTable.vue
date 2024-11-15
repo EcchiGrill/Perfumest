@@ -2,7 +2,6 @@
 import type {
   ColumnFiltersState,
   ExpandedState,
-  SortingFn,
   SortingState,
   VisibilityState,
 } from "@tanstack/vue-table";
@@ -38,47 +37,55 @@ import {
 import { h, ref } from "vue";
 import { FetchedOrderType } from "@/lib/types";
 import { useOrders } from "@/stores/useOrders";
+import { valueUpdater } from "@/lib/utils";
+import { useAuth } from "@/stores/useAuth";
 
 const ordersStore = useOrders();
+const authStore = useAuth();
 
 const columnHelper = createColumnHelper<FetchedOrderType>();
 
-declare module "@tanstack/table-core" {
-  interface SortingFns {
-    statusSorting: SortingFn<unknown>;
-  }
-}
-
 const columns = [
   columnHelper.accessor("status", {
+    header: ({}) => {
+      return h(h("div", { class: "capitalize" }, "Status"));
+    },
+
+    cell: ({ row }) =>
+      h("div", { class: "capitalize" }, row.renderValue("status")),
+  }),
+
+  columnHelper.accessor("email", {
+    header: () => {
+      return h(h("div", { class: "capitalize" }, "Email"));
+    },
+    cell: ({ row }) => h("div", row.getValue("email")),
+  }),
+
+  columnHelper.accessor("date", {
     enablePinning: true,
     header: ({ column }) => {
       return h(
         Button,
         {
           variant: "ghost",
-          onClick: () => column.getSortingFn(),
+          onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
         },
-        () => ["Status", h(CaretSortIcon, { class: "ml-2 h-4 w-4" })]
+        () => ["Date", h(CaretSortIcon, { class: "ml-2 h-4 w-4" })]
       );
     },
 
     cell: ({ row }) =>
-      h("div", { class: "capitalize" }, row.renderValue("status")),
-
-    sortingFn: (rowA, rowB, columnId) => {
-      if (
-        (rowA.getValue(columnId) === "successful" &&
-          rowB.getValue(columnId) === "failed") ||
-        (rowA.getValue(columnId) === "delivering" &&
-          rowB.getValue(columnId) === "proccesing")
-      ) {
-        console.log(`dsds`);
-        return 1;
-      } else {
-        return -1;
-      }
-    },
+      h(
+        "div",
+        { class: "capitalize" },
+        new Date(Date.parse(row.renderValue("date"))).toLocaleDateString(
+          ["en-US"],
+          {
+            formatMatcher: "basic",
+          }
+        )
+      ),
   }),
 
   columnHelper.accessor("order", {
@@ -116,7 +123,6 @@ const columns = [
 const sorting = ref<SortingState>([]);
 const columnFilters = ref<ColumnFiltersState>([]);
 const columnVisibility = ref<VisibilityState>({});
-const rowSelection = ref({});
 const expanded = ref<ExpandedState>({});
 
 const table = useVueTable({
@@ -127,21 +133,12 @@ const table = useVueTable({
   getSortedRowModel: getSortedRowModel(),
   getFilteredRowModel: getFilteredRowModel(),
   getExpandedRowModel: getExpandedRowModel(),
-
-  sortingFns: {
-    statusSorting: (rowA, rowB, columnId) => {
-      if (
-        (rowA.getValue(columnId) === "successful" &&
-          rowB.getValue(columnId) === "failed") ||
-        (rowA.getValue(columnId) === "delivering" &&
-          rowB.getValue(columnId) === "proccesing")
-      ) {
-        return 1;
-      } else {
-        return -1;
-      }
-    },
-  },
+  onSortingChange: (updaterOrValue) => valueUpdater(updaterOrValue, sorting),
+  onColumnFiltersChange: (updaterOrValue) =>
+    valueUpdater(updaterOrValue, columnFilters),
+  onColumnVisibilityChange: (updaterOrValue) =>
+    valueUpdater(updaterOrValue, columnVisibility),
+  onExpandedChange: (updaterOrValue) => valueUpdater(updaterOrValue, expanded),
 
   state: {
     get sorting() {
@@ -153,14 +150,8 @@ const table = useVueTable({
     get columnVisibility() {
       return columnVisibility.value;
     },
-    get rowSelection() {
-      return rowSelection.value;
-    },
     get expanded() {
       return expanded.value;
-    },
-    columnPinning: {
-      left: ["status"],
     },
   },
 });
@@ -171,9 +162,9 @@ const table = useVueTable({
     <div class="flex gap-2 items-center py-4">
       <Input
         class="max-w-sm"
-        placeholder="Filter emails..."
-        :model-value="table.getColumn('status')?.getFilterValue() as string"
-        @update:model-value="table.getColumn('status')?.setFilterValue($event)"
+        placeholder="Filter orders..."
+        :model-value="table.getColumn('order')?.getFilterValue() as string"
+        @update:model-value="table.getColumn('order')?.setFilterValue($event)"
       />
       <DropdownMenu>
         <DropdownMenuTrigger as-child>

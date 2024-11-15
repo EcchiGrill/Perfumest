@@ -5,6 +5,7 @@ import { useCookies } from "@vueuse/integrations/useCookies";
 import { useAuth } from "@/stores/useAuth";
 import { useOrders } from "@/stores/useOrders";
 import { usePerfumes } from "@/stores/usePerfumes";
+import { ADMIN_EMAIL } from "@/lib/constants";
 
 const { set, remove } = useCookies(["session"]);
 const authStore = useAuth();
@@ -15,15 +16,23 @@ const checkUserSession = async () => {
   supabase.auth
     .getSession()
     .then(({ data }) => {
-      set("session", data.session?.access_token);
+      if (!data.session) {
+        signInAnon();
+      } else if (data.session && data.session.user.email) {
+        authStore.isLogged = true;
 
-      if (!data.session) signInAnon();
+        if (data.session.user.email === ADMIN_EMAIL) authStore.isAdmin = true;
+      }
+
+      set("session", data.session?.access_token);
 
       authStore.userSession = data.session;
       authStore.userData = data.session?.user;
 
       perfumesStore.fetchPerfumes();
-      ordersStore.fetchOrders();
+
+      if (data.session && authStore.isLogged) ordersStore.fetchOrders();
+      if (authStore.isAdmin) ordersStore.fetchAdminOrders();
 
       supabase.auth.onAuthStateChange((event, session) => {
         set("session", session?.access_token || "");

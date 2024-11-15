@@ -11,6 +11,7 @@ const cherryPickedKeys = [
   "SUPABASE_ANON_KEY",
   "ADMIN_EMAIL",
   "ADMIN_PASSWORD",
+  "RESEND_KEY",
 ];
 
 // https://vitejs.dev/config/

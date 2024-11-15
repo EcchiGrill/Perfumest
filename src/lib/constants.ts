@@ -4,6 +4,8 @@ export const SUPABASE_TOKEN = process.env.SUPABASE_ANON_KEY;
 export const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
 export const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
+export const RESEND_KEY = process.env.RESEND_KEY;
+
 export const AUTOPLAY_INTERVAL = 5000;
 
 export const ITEMS_PER_CAROUSEL = 5;

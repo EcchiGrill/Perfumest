@@ -7,6 +7,7 @@ import Register from "@/views/RegisterView.vue";
 import Contact from "@/views/ContactView.vue";
 import Checkout from "@/views/CheckoutView.vue";
 import NotFound from "@/views/NotFound.vue";
+import Terms from "@/views/TermsView.vue";
 import { createRouter, createWebHistory } from "vue-router";
 import { useModalRouter } from "jenesius-vue-modal";
 
@@ -33,7 +34,7 @@ const routes = [
   { path: "/shop", component: Shop },
   { path: "/contact", component: Contact },
   { path: "/checkout", component: Checkout },
-
+  { path: "/terms", component: Terms },
   { path: "/:pathMatch(.*)*", component: NotFound },
 ];
 

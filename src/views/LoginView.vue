@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted } from "vue";
+import { onBeforeMount, ref } from "vue";
 import {
   MailIcon,
   LockIcon,
@@ -15,44 +15,34 @@ import { openModal } from "jenesius-vue-modal";
 import RegisterView from "@/views/RegisterView.vue";
 import ModalBg from "@/modals/ModalBg.vue";
 import GoogleIcon from "@/assets/GoogleIcon.vue";
-import { useRouter } from "vue-router";
 import { useAuth } from "@/stores/useAuth";
+import { useRouter } from "vue-router";
 
 const authStore = useAuth();
 const router = useRouter();
 
 const email = ref("");
 const password = ref("");
-const rememberMe = ref(false);
 const showPassword = ref(false);
 const isLoading = ref(false);
-const errors = reactive({
-  password: "",
-});
 
 const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value;
 };
 
 const handleSubmit = async () => {
-  if (password.value.length < 8) {
-    errors.password = "Password must be at least 8 characters long";
-    return;
-  }
-
-  errors.password = "";
-
   console.log(email);
   console.log(password);
 
   authStore.signUser({
     email: email.value,
     password: password.value,
-    rememberMe: rememberMe.value,
   });
 };
 
-onMounted(() => authStore.isLogged && router.push("/profile"));
+onBeforeMount(() => {
+  authStore.isLogged && router.push("/profile");
+});
 </script>
 
 <template>
@@ -105,12 +95,7 @@ onMounted(() => authStore.isLogged && router.push("/profile"));
               autocomplete="current-password"
               required
               v-model="password"
-              :class="[
-                'block w-full pl-10 pr-10 sm:text-sm rounded-md',
-                errors.password
-                  ? 'border-red-300 text-red-900 placeholder-red-300 focus:ring-red-500 focus:border-red-500'
-                  : 'border-gray-300 focus:ring-gold focus:border-gold',
-              ]"
+              class="'block w-full pl-10 pr-10 sm:text-sm rounded-md border-gray-300"
               placeholder="••••••••"
             />
             <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
@@ -124,29 +109,8 @@ onMounted(() => authStore.isLogged && router.push("/profile"));
               </button>
             </div>
           </div>
-          <p v-if="errors.password" class="mt-2 text-sm text-red-600">
-            {{ errors.password }}
-          </p>
-        </div>
 
-        <div class="flex items-center justify-between">
-          <div class="flex items-center">
-            <input
-              id="remember-me"
-              name="remember-me"
-              type="checkbox"
-              v-model="rememberMe"
-              class="h-4 w-4 border-gray-300 rounded accent-primary"
-            />
-            <label
-              for="remember-me"
-              class="ml-2 block text-sm font-medium text-gray-900"
-            >
-              Remember me
-            </label>
-          </div>
-
-          <div class="text-sm">
+          <div class="text-sm mt-3 text-left">
             <a
               href="#"
               class="font-medium hover:text-primary transition duration-300"

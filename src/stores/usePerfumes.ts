@@ -19,22 +19,23 @@ export const usePerfumes = defineStore("perfumes", () => {
     try {
       const { data, error } = await supabase.from("perfumes").select();
 
-      if (error) throw new Error("Fetching Error");
+      if (error) throw error;
 
       perfumes.value = data;
-      likedIds.value = authStore.userData!.user_metadata.likedIds ??= [];
-      likedPerfumes.value = authStore.userData!.user_metadata.likedPerfumes ??=
-        [];
-      cartIds.value = authStore.userData!.user_metadata.cartIds ??= [];
-      cartPerfumes.value = authStore.userData!.user_metadata.cartPerfumes ??=
-        [];
 
       shuffledPerfumes.value = [...data];
       shuffleArray(shuffledPerfumes.value);
 
-      return data;
+      likedIds.value = authStore.userData!.user_metadata.likedIds ??= [];
+      likedPerfumes.value = likedIds.value.map((id) => {
+        return perfumes.value.find((perfume) => perfume.id === id)!;
+      });
+      cartIds.value = authStore.userData!.user_metadata.cartIds ??= [];
+      cartPerfumes.value = cartIds.value.map((id) => {
+        return perfumes.value.find((perfume) => perfume.id === id)!;
+      });
     } catch (error) {
-      return;
+      return error;
     }
   };
 

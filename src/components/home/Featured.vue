@@ -24,7 +24,7 @@ const authStore = useAuth();
 
         <Perfume
           v-for="(perfume, index) in perfumesStore.perfumes"
-          v-show="index < 4"
+          v-show="index < 3"
           :perfume="perfume"
           :key="perfume.id"
         />

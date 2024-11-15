@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted } from "vue";
+import { ref, reactive, onBeforeMount } from "vue";
 import {
   MailIcon,
   LockIcon,
@@ -23,6 +23,7 @@ import ModalBg from "@/modals/ModalBg.vue";
 import GoogleIcon from "@/assets/GoogleIcon.vue";
 import { useAuth } from "@/stores/useAuth";
 import { useRouter } from "vue-router";
+import { closeModal } from "jenesius-vue-modal";
 
 const authStore = useAuth();
 const router = useRouter();
@@ -65,12 +66,8 @@ const handleSubmit = async () => {
   });
 };
 
-const setScrollHidden = () =>
-  document.documentElement.style.setProperty("--body-overflow", "hidden");
-
-onMounted(() => {
+onBeforeMount(() => {
   authStore.isLogged && router.push("/profile");
-  setScrollHidden();
 });
 </script>
 
@@ -215,11 +212,18 @@ onMounted(() => {
           />
           <label for="terms" class="ml-2 flex gap-1 text-sm text-secondary">
             I agree to the
-            <RouterLink to="#" class="group block -mb-0.5 text-primary"
+            <a
+              @click="
+                () => {
+                  closeModal();
+                  $router.push('/terms');
+                }
+              "
+              class="group block -mb-0.5 text-primary"
               >Terms and Conditions<span
                 class="block w-0 group-hover:w-full transition-all duration-300 h-0.5 bg-primary"
               ></span
-            ></RouterLink>
+            ></a>
           </label>
         </div>
 
